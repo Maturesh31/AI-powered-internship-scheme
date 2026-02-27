@@ -5,6 +5,8 @@ def calculate_match(student, internship):
 
     total_score = 0
     skill_gap = {}
+    strong_skills = []
+    weak_skills = {}
 
     for skill, required_level in required.items():
         weight = weights.get(skill, 0)
@@ -17,6 +19,11 @@ def calculate_match(student, internship):
         # Gap calculation
         if student_level < required_level:
             skill_gap[skill] = (required_level - student_level) * weight
+            
+        if student_level >= required_level:
+            strong_skills.append(skill)
+        else:
+            weak_skills[skill] = (required_level - student_level) * weight
 
     match_percent = round(total_score * 100, 2)
 
@@ -30,6 +37,7 @@ def calculate_match(student, internship):
 
     return {
         "match_percent": match_percent,
-        "skill_gap": skill_gap,
-        "classification": classification
+        "classification": classification,
+        "strong_skills": strong_skills,
+        "weak_skills": weak_skills
     }

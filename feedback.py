@@ -1,15 +1,45 @@
 def generate_feedback(result):
     percent = result["match_percent"]
-    gap = result["skill_gap"]
     classification = result["classification"]
+    strong = result.get("strong_skills", [])
+    weak = result.get("weak_skills", {})
 
-    if percent < 60:
-        if gap:
-            weak_skills = sorted(gap, key=gap.get, reverse=True)[:2]
-            return f"You achieved {percent}% match. Improve {', '.join(weak_skills)} to meet eligibility."
-        return f"You achieved {percent}% match. Strengthen required skills."
+    feedback = []
 
-    if classification == "Strong Match":
-        return f"Excellent profile alignment with {percent}% match. You are well suited for this role."
+    feedback.append(
+        f"Your profile achieved a {percent}% alignment score, categorized as {classification}."
+    )
 
-    return f"You achieved {percent}% match. Improving high-weighted weak skills can increase competitiveness."
+    # Strength insight
+    if strong:
+        feedback.append(
+            f"Core strengths include {', '.join(strong[:2])}, demonstrating solid competency in key areas."
+        )
+
+    # Weakness insight
+    if weak:
+        sorted_weak = sorted(weak, key=weak.get, reverse=True)
+        top_gaps = sorted_weak[:2]
+        feedback.append(
+            f"The primary improvement areas are {', '.join(top_gaps)}, which carry significant evaluation weight."
+        )
+
+    # Strategic advisory
+    if percent >= 85:
+        feedback.append(
+            "Your profile is highly competitive and stands out strongly among typical applicants."
+        )
+    elif percent >= 75:
+        feedback.append(
+            "With minor targeted skill refinement, your candidacy can become exceptionally strong."
+        )
+    elif percent >= 60:
+        feedback.append(
+            "Focused upskilling in the highlighted areas can substantially increase your selection probability."
+        )
+    else:
+        feedback.append(
+            "Significant skill development is recommended to meet the required competency threshold."
+        )
+
+    return " ".join(feedback)
